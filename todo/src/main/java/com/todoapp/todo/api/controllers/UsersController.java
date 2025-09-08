@@ -21,12 +21,16 @@ public class UsersController {
         this.userService = userService;
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserRequestDto> getUserByUserId(@PathVariable Long userId) {
+    @GetMapping("/{username}")
+    public ResponseEntity<UserRequestDto> getUserByUsername(@PathVariable String username) {
         // "userRequestDto" = det objekt og objekttype som jeg vil sende afsted
         // "userService.getUserDtoById" = den operation der returnere objektet som gemmes
         // i "userRequestDto".
-        UserRequestDto userRequestDto = userService.getUserDtoById(userId);
+        UserRequestDto userRequestDto = userService.getUserDtoByUsername(username);
+
+        if (userRequestDto == null) {
+            return ResponseEntity.noContent().build();
+        }
         return ResponseEntity.ok(userRequestDto);
     }
     

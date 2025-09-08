@@ -14,17 +14,35 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserRequestDto getUserDtoById(Long userId) {
-        User userEntity = userRepository.findFirstByUserId(userId);
+    public UserRequestDto getUserDtoByUsername(String username) {
+        User userEntity;
 
+        try {
+            userEntity = userRepository.findFirstByUsername(username);
+            if (userEntity == null) {
+                return null; 
+                //returnere null hvis der skal laves en ny bruger
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching user with username: " + username, e);
+        }
+    
         //bygger et objekt af typen UserRequestDto som beskrevet i dto mappen
         //bruger builder til at bygge objektet i overensstemmelse med entity/User
         return UserRequestDto.builder()
             .username(userEntity.getUsername())
             .password(userEntity.getPassword())
-            .active(userEntity.getActive())
+            .active(userEntity.isActive())
             .userId(userEntity.getUserId())
             .build();
+    }
+
+    public void createNewUserByUsername(String username) {
+        User newUser = new User();
+        newUser.setUsername(username);
+        newUser.setPassword(null);
+        newUser.setActive(true);
+        userRepository.save(newUser);
     }
 
 }
