@@ -3,6 +3,7 @@ package com.todoapp.todo.services;
 import org.springframework.stereotype.Service;
 
 import com.todoapp.todo.api.dto.UserRequestDto;
+import com.todoapp.todo.enums.rowUpdateStatus;
 import com.todoapp.todo.persistence.entity.User;
 import com.todoapp.todo.persistence.repository.UserRepository;
 
@@ -45,4 +46,25 @@ public class UserService {
         userRepository.save(newUser);
     }
 
+    public rowUpdateStatus setUserPassword(String username, String password) {
+        User userEntity;
+
+        try {
+            userEntity = userRepository.findFirstByUsername(username);
+            if (userEntity == null) {
+                //returnere null hvis der skal laves en ny bruger
+                return rowUpdateStatus.USER_NOT_FOUND;
+            }
+            
+            userEntity.setPassword(password);
+            userRepository.save(userEntity);
+            return rowUpdateStatus.SUCCESS;
+
+
+        } catch (Exception e) {
+            return rowUpdateStatus.ERROR;
+        }
+    }
+
 }
+
