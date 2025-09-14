@@ -38,12 +38,19 @@ public class UserService {
             .build();
     }
 
-    public void createNewUserByUsername(String username) {
-        User newUser = new User();
-        newUser.setUsername(username);
-        newUser.setPassword(null);
-        newUser.setActive(true);
-        userRepository.save(newUser);
+    public rowUpdateStatus createNewUserByUsername(String username) {
+        
+        try {
+            User newUser = new User();
+            newUser.setUsername(username);
+            newUser.setPassword(null);
+            newUser.setActive(true);
+            userRepository.save(newUser);
+            return rowUpdateStatus.SUCCESS;
+        } catch (Exception e) {
+            return rowUpdateStatus.ERROR;
+        }
+
     }
 
     public rowUpdateStatus setUserPassword(String username, String password) {
@@ -58,6 +65,45 @@ public class UserService {
             
             userEntity.setPassword(password);
             userRepository.save(userEntity);
+            return rowUpdateStatus.SUCCESS;
+
+
+        } catch (Exception e) {
+            return rowUpdateStatus.ERROR;
+        }
+    }
+
+    public rowUpdateStatus deactivateUser(String username) {
+        User userEntity;
+
+        try {
+            userEntity = userRepository.findFirstByUsername(username);
+            if (userEntity == null) {
+                //returnere null hvis der skal laves en ny bruger
+                return rowUpdateStatus.USER_NOT_FOUND;
+            }
+            
+            userEntity.setActive(false);
+            userRepository.save(userEntity);
+            return rowUpdateStatus.SUCCESS;
+
+
+        } catch (Exception e) {
+            return rowUpdateStatus.ERROR;
+        }
+    }
+
+        public rowUpdateStatus deleteUser(String username) {
+        User userEntity;
+
+        try {
+            userEntity = userRepository.findFirstByUsername(username);
+            if (userEntity == null) {
+                //returnere null hvis der skal laves en ny bruger
+                return rowUpdateStatus.USER_NOT_FOUND;
+            }
+            userRepository.delete(userEntity);
+            
             return rowUpdateStatus.SUCCESS;
 
 

@@ -6,7 +6,6 @@ import com.todoapp.todo.api.dto.UserRequestDto;
 import com.todoapp.todo.enums.rowUpdateStatus;
 import com.todoapp.todo.services.UserService;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,47 +24,55 @@ public class UsersController {
         this.userService = userService;
     }
 
-    @GetMapping("getUser/{username}")
-    public ResponseEntity<UserRequestDto> getUserByUsername(@PathVariable String username) {
-        // "userRequestDto" = det objekt og objekttype som jeg vil sende afsted
-        // "userService.getUserDtoById" = den operation der returnere objektet som gemmes
-        // i "userRequestDto".
+    @GetMapping("/getUser/{username}/{password}")
+    public ResponseEntity<UserRequestDto> getUserByUsername(@PathVariable String username, @PathVariable String password) {
         UserRequestDto userRequestDto = userService.getUserDtoByUsername(username);
-
         if (userRequestDto == null) {
             return ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(userRequestDto);
+        
+        //hvis password ikke er sat
+        if (password.equals("null") && userRequestDto.getPassword() == null) {
+            return ResponseEntity.ok(userRequestDto);
+        }
+
+        //hvis password er sat og det er det rigtige
+        var thePassword = userRequestDto.getPassword();
+        if (thePassword.equals(password) && !thePassword.equals("null")) {
+            return ResponseEntity.ok(userRequestDto);
+        }
+        return ResponseEntity.ok(null);
     }
 
-    @PostMapping("createNewUser/{username}")
+    @PostMapping("/createNewUser/{username}")
     public ResponseEntity<String> createNewUserByUsername(@PathVariable String username) {
-        userService.createNewUserByUsername(username);
-        return new ResponseEntity<>("new user created with username: " + username, HttpStatus.OK);
+        rowUpdateStatus status = userService.createNewUserByUsername(username);
+        return ResponseEntity.ok(status.toString());
     }
 
 
-    @PostMapping("setUserPassword/{username}/{password}")
+    @PostMapping("/setUserPassword/{username}/{password}")
     public ResponseEntity<String> setUserPassword(@PathVariable String username, @PathVariable String password) {
         rowUpdateStatus status = userService.setUserPassword(username, password);
         
-            switch (status) {
-        case SUCCESS:
-            return ResponseEntity
-                    .ok("Password updated successfully for user: " + username);
-
-        case USER_NOT_FOUND:
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("User not found: " + username);
-
-        case ERROR:
-        default:
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while updating password for: " + username);
+        return ResponseEntity.ok(status.toString());
     }
+
+    @PostMapping("/deactivateUser/{username}")
+    public ResponseEntity<String> deactivateUser(@PathVariable String username) {
+        rowUpdateStatus status = userService.deactivateUser(username);
+        
+        return ResponseEntity.ok(status.toString());
     }
+
+    @PostMapping("/deleteUser/{username}")
+    public ResponseEntity<String> deleteUser(@PathVariable String username) {
+        rowUpdateStatus status = userService.deleteUser(username);
+        
+        return ResponseEntity.ok(status.toString());
+    }
+
+
     
     
     
