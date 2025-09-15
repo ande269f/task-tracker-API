@@ -15,7 +15,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserRequestDto getUserDtoByUsername(String username) {
+    public User getUserByUsername(String username) {
         User userEntity;
 
         try {
@@ -27,15 +27,34 @@ public class UserService {
         } catch (Exception e) {
             throw new RuntimeException("Error fetching user with username: " + username, e);
         }
-    
-        //bygger et objekt af typen UserRequestDto som beskrevet i dto mappen
-        //bruger builder til at bygge objektet i overensstemmelse med entity/User
+
+        return userEntity;
+    }
+
+    public rowUpdateStatus checkUserPasswordLogin(User user, String password) {
+
+        if (user.getPassword() == null) {
+            return rowUpdateStatus.SUCCESS;
+        }
+
+        if (user.getPassword().equals(password)) {
+            return rowUpdateStatus.SUCCESS;
+        } 
+        else {
+            return rowUpdateStatus.LOGIN_FAILED;
+        }
+
+
+    }
+
+    public UserRequestDto setUserDto(User userEntity) {
         return UserRequestDto.builder()
             .username(userEntity.getUsername())
             .password(userEntity.getPassword())
             .active(userEntity.isActive())
             .userId(userEntity.getUserId())
             .build();
+
     }
 
     public rowUpdateStatus createNewUserByUsername(String username) {

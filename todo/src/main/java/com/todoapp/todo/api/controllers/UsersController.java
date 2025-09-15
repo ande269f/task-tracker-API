@@ -1,11 +1,15 @@
 package com.todoapp.todo.api.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.todoapp.todo.api.dto.UserRequestDto;
 import com.todoapp.todo.enums.rowUpdateStatus;
+import com.todoapp.todo.persistence.entity.User;
 import com.todoapp.todo.services.UserService;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,24 +28,28 @@ public class UsersController {
         this.userService = userService;
     }
 
-    @GetMapping("/getUser/{username}/{password}")
-    public ResponseEntity<UserRequestDto> getUserByUsername(@PathVariable String username, @PathVariable String password) {
-        UserRequestDto userRequestDto = userService.getUserDtoByUsername(username);
-        if (userRequestDto == null) {
-            return ResponseEntity.noContent().build();
-        }
+    @GetMapping("/getUser/{username}")
+    public ResponseEntity<?> getUserByUsername(@PathVariable String username, @RequestParam(required = false) String password) {
         
-        //hvis password ikke er sat
-        if (password.equals("null") && userRequestDto.getPassword() == null) {
-            return ResponseEntity.ok(userRequestDto);
+        User user = userService.getUserByUsername(username);
+
+        // hvis brugeren ikke findes
+        if (user == null) {
+            return ResponseEntity.ok(rowUpdateStatus.USER_NOT_FOUND);
         }
 
-        //hvis password er sat og det er det rigtige
-        var thePassword = userRequestDto.getPassword();
-        if (thePassword.equals(password) && !thePassword.equals("null")) {
-            return ResponseEntity.ok(userRequestDto);
+        rowUpdateStatus loginStatus = userService.checkUserPasswordLogin(user, password);
+
+        if (loginStatus.equals(rowUpdateStatus.SUCCESS)) {
+            UserRequestDto userDto = userService.setUserDto(user);
+            return ResponseEntity.ok(userDto);
         }
-        return ResponseEntity.ok(null);
+        else {
+            return ResponseEntity.status(HttpStatus.OK).body(loginStatus.toString());
+        }
+
+
+
     }
 
     @PostMapping("/createNewUser/{username}")

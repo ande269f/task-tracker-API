@@ -15,3 +15,5 @@ public class UserRequestDto {
     private boolean active;
     private Long userId;
 }
+
+
