@@ -29,5 +29,6 @@ public class SecurityConfiguration {
         .authorizeHttpRequests((requests) -> requests
         .requestMatchers(HttpMethod.POST, "/getUser").permitAll()
         .anyRequest().authenticated());
+        return http.build(); // <--- DEN MANGLEDE
     }
 }
