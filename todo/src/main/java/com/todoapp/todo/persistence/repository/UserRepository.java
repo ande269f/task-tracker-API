@@ -10,7 +10,6 @@ import com.todoapp.todo.persistence.entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByUsername(String username);
-    
     User findFirstByUsername(String username);
 
 }

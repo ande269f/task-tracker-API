@@ -8,7 +8,6 @@ import com.todoapp.todo.enums.rowUpdateStatus;
 import com.todoapp.todo.persistence.entity.User;
 import com.todoapp.todo.services.UserService;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
