@@ -5,43 +5,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.todoapp.todo.api.dto.UserRequestDto;
 import com.todoapp.todo.enums.rowUpdateStatus;
-import com.todoapp.todo.persistence.entity.User;
 import com.todoapp.todo.services.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UsersController {
     
     private final UserService userService;
 
-    public UsersController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping("/getUser/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username, @RequestParam(required = false) String password) {
         
-        User user = userService.getUserByUsername(username);
+        UserRequestDto user = userService.getUserByUsername(username);
 
         // hvis brugeren ikke findes
         if (user == null) {
             return ResponseEntity.ok(rowUpdateStatus.USER_NOT_FOUND);
         }
 
-        rowUpdateStatus loginStatus = userService.checkUserPasswordLogin(user, password);
+        // tjekker om password er korrekt - også selvom password er null
+        rowUpdateStatus loginStatus = userService.checkUserPasswordLogin(user.getUsername(), password);
 
         if (loginStatus.equals(rowUpdateStatus.SUCCESS)) {
-            UserRequestDto userDto = userService.setUserDto(user);
-            return ResponseEntity.ok(userDto);
+            user.set
+            return ResponseEntity.ok(user);
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(loginStatus.toString());

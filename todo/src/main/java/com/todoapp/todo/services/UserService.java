@@ -7,15 +7,22 @@ import com.todoapp.todo.enums.rowUpdateStatus;
 import com.todoapp.todo.persistence.entity.User;
 import com.todoapp.todo.persistence.repository.UserRepository;
 
+import java.nio.CharBuffer;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public User getUserByUsername(String username) {
+    public UserRequestDto getUserByUsername(String username) {
         User userEntity;
 
         try {
@@ -28,32 +35,28 @@ public class UserService {
             throw new RuntimeException("Error fetching user with username: " + username, e);
         }
 
-        return userEntity;
-    }
-
-    public rowUpdateStatus checkUserPasswordLogin(User user, String password) {
-
-        if (user.getPassword() == null) {
-            return rowUpdateStatus.SUCCESS;
-        }
-
-        if (user.getPassword().equals(password)) {
-            return rowUpdateStatus.SUCCESS;
-        } 
-        else {
-            return rowUpdateStatus.LOGIN_FAILED;
-        }
-
-
-    }
-
-    public UserRequestDto setUserDto(User userEntity) {
         return UserRequestDto.builder()
             .username(userEntity.getUsername())
             .password(userEntity.getPassword())
             .active(userEntity.isActive())
             .userId(userEntity.getUserId())
             .build();
+
+    }
+
+    public rowUpdateStatus checkUserPasswordLogin(String username, String password) {
+
+        if (username == null) {
+            return rowUpdateStatus.SUCCESS;
+        }
+
+        if (username.equals(password)) {
+            return rowUpdateStatus.SUCCESS;
+        } 
+        else {
+            return rowUpdateStatus.LOGIN_FAILED;
+        }
+
 
     }
 
@@ -82,7 +85,7 @@ public class UserService {
                 return rowUpdateStatus.USER_NOT_FOUND;
             }
             
-            userEntity.setPassword(password);
+            userEntity.setPassword(passwordEncoder.encode(CharBuffer.wrap(password)));
             userRepository.save(userEntity);
             return rowUpdateStatus.SUCCESS;
 

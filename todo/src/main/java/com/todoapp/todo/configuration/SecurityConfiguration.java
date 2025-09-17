@@ -17,18 +17,23 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfiguration {
 
     private final UserAuthenticationEntryPoint userAuthenticationEntryPoint;
+    private final UserAuthProvider userAuthProvider;
     
     @Bean
-    public SecurityFilterChain(HttpSecurity http) {
-        http.exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint)
-        .and()
-        .addFilterBefore(new JwtAuthFilter(), BasicAuthenticationFilter.class)
-        .csrf.disable()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        .and()
-        .authorizeHttpRequests((requests) -> requests
-        .requestMatchers(HttpMethod.POST, "/getUser").permitAll()
-        .anyRequest().authenticated());
-        return http.build(); // <--- DEN MANGLEDE
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .exceptionHandling().authenticationEntryPoint(userAuthenticationEntryPoint)
+                .and()
+                .addFilterBefore(new JwtAuthFilter(userAuthProvider), BasicAuthenticationFilter.class)
+                .cors()
+                .and()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeHttpRequests((requests) -> requests
+                        .requestMatchers(HttpMethod.GET, "/getUser").permitAll()
+                        .anyRequest().authenticated())
+        ;
+        return http.build();
     }
 }
