@@ -32,6 +32,7 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.GET, "/users/getUser/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/createNewUser/**").permitAll()
                         .anyRequest().authenticated())
         ;
         return http.build();

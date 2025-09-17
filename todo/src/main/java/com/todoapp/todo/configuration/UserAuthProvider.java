@@ -39,7 +39,10 @@ public class UserAuthProvider {
         // token valid only one hour
         Date validity = new Date(now.getTime() + 3_600_000);
         return JWT.create()
-            .withIssuer(userDto.getUsername())
+            .withClaim("username", userDto.getUsername())
+            .withClaim("password", userDto.getPassword())
+            .withClaim("userId", userDto.getUserId())
+            .withClaim("active", userDto.isActive())
             .withIssuedAt(now)
             .withExpiresAt(validity)
             .sign(Algorithm.HMAC256(secretKey));
@@ -51,7 +54,7 @@ public class UserAuthProvider {
 
         DecodedJWT decoded = verifier.verify(token);
 
-        UserRequestDto userDto = userService.getUserByUsername(decoded.getIssuer());
+        UserRequestDto userDto = userService.getUserByUsername(decoded.getClaim("username").asString());
 
         // returnere en Authentication objekt (spring security abstraktion). 
         // objektet vliver lagt i securitycontext og bruges i resten af spring security

@@ -40,7 +40,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             //hvis der er en auth header
             if (header != null) {
-                String[] elements = header.split("");
+                String[] elements = header.split(" ");
                 // forventer formatet Authorization: Bearer <token>
                 if (elements.length == 2 && "Bearer".equals(elements[0])) {
                     try {

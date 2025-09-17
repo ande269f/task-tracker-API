@@ -9,11 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRequestDto {
-    private String username;
-    private String password;
-    private boolean active;
-    private Long userId;
+public class UserDtoJwt {
+    private String token;
 }
-
-

@@ -3,6 +3,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.todoapp.todo.api.dto.UserDtoJwt;
 import com.todoapp.todo.api.dto.UserRequestDto;
 import com.todoapp.todo.configuration.UserAuthProvider;
 import com.todoapp.todo.enums.rowUpdateStatus;
@@ -32,6 +33,7 @@ public class UsersController {
     public ResponseEntity<?> getUserByUsername(@PathVariable String username, @RequestParam(required = false) String password) {
         
         UserRequestDto userDto = userService.getUserByUsername(username);
+        UserDtoJwt userDtoJwt = new UserDtoJwt();
 
         // hvis brugeren ikke findes
         if (userDto == null) {
@@ -42,8 +44,8 @@ public class UsersController {
         rowUpdateStatus loginStatus = userService.checkUserPasswordLogin(userDto.getUsername(), password);
 
         if (loginStatus.equals(rowUpdateStatus.SUCCESS)) {
-            userDto.setToken(userAuthProvider.createToken(userDto));
-            return ResponseEntity.ok(userDto);
+            userDtoJwt.setToken(userAuthProvider.createToken(userDto));
+            return ResponseEntity.ok(userDtoJwt);
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(loginStatus.toString());
