@@ -24,22 +24,22 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class UserAuthProvider {
 
-    @Value("${security.jwt.token.secret-key:secret-value}")
+    @Value("${security.jwt.token.secret-key:very-long-and-secure-secret-key-1234567891011121314151617181920}")
     private String secretKey;
 
     private final UserService userService;
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        //secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public String createToken(String login) {
+    public String createToken(UserRequestDto userDto) {
         Date now = new Date();
         // token valid only one hour
         Date validity = new Date(now.getTime() + 3_600_000);
         return JWT.create()
-            .withIssuer(login)
+            .withIssuer(userDto.getUsername())
             .withIssuedAt(now)
             .withExpiresAt(validity)
             .sign(Algorithm.HMAC256(secretKey));

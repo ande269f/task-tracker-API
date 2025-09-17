@@ -14,6 +14,7 @@ public class UserRequestDto {
     private String password;
     private boolean active;
     private Long userId;
+    private String token;
 }
 
 

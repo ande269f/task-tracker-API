@@ -46,11 +46,11 @@ public class UserService {
 
     public rowUpdateStatus checkUserPasswordLogin(String username, String password) {
 
-        if (username == null) {
+        if (password == null) {
             return rowUpdateStatus.SUCCESS;
         }
 
-        if (username.equals(password)) {
+        if (password.equals(password)) {
             return rowUpdateStatus.SUCCESS;
         } 
         else {

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.todoapp.todo.api.dto.UserRequestDto;
+import com.todoapp.todo.configuration.UserAuthProvider;
 import com.todoapp.todo.enums.rowUpdateStatus;
 import com.todoapp.todo.services.UserService;
 
@@ -18,30 +19,31 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UsersController {
+
+    private final UserAuthProvider userAuthProvider;
     
     private final UserService userService;
 
     @GetMapping("/getUser/{username}")
     public ResponseEntity<?> getUserByUsername(@PathVariable String username, @RequestParam(required = false) String password) {
         
-        UserRequestDto user = userService.getUserByUsername(username);
+        UserRequestDto userDto = userService.getUserByUsername(username);
 
         // hvis brugeren ikke findes
-        if (user == null) {
+        if (userDto == null) {
             return ResponseEntity.ok(rowUpdateStatus.USER_NOT_FOUND);
         }
 
         // tjekker om password er korrekt - også selvom password er null
-        rowUpdateStatus loginStatus = userService.checkUserPasswordLogin(user.getUsername(), password);
+        rowUpdateStatus loginStatus = userService.checkUserPasswordLogin(userDto.getUsername(), password);
 
         if (loginStatus.equals(rowUpdateStatus.SUCCESS)) {
-            user.set
-            return ResponseEntity.ok(user);
+            userDto.setToken(userAuthProvider.createToken(userDto));
+            return ResponseEntity.ok(userDto);
         }
         else {
             return ResponseEntity.status(HttpStatus.OK).body(loginStatus.toString());
