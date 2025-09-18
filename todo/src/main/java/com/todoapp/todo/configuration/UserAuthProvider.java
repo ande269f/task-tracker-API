@@ -31,13 +31,14 @@ public class UserAuthProvider {
 
     @PostConstruct
     protected void init() {
+        //base64 encoding giver problemer - derfor bruges den rå streng direkte
         //secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
     public String createToken(UserRequestDto userDto) {
         Date now = new Date();
         // token valid only one hour
-        Date validity = new Date(now.getTime() + 3_600_000);
+        Date validity = new Date(now.getTime() + 360000000);
         return JWT.create()
             .withClaim("username", userDto.getUsername())
             .withClaim("password", userDto.getPassword())
