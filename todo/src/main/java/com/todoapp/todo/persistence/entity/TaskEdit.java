@@ -11,10 +11,10 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name="task_edits")
-public class TaskEdits {
+public class TaskEdit {
     @Id
     private String editUuid;  
-    private LocalDateTime dateEdits;
+    private LocalDateTime dateEdited;
     private LocalDateTime taskDeleted;
     private String taskUuid;
     private String taskText;

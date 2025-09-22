@@ -12,14 +12,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskEditsDto {
+public class TaskEditDto {
     @Id
-    private String editUuid;  
-    private LocalDateTime dateEdits;
+    private String taskEditsUuid;  
+    private LocalDateTime dateEdited;
     private LocalDateTime taskDeleted;
     private String taskUuid;
     private String taskText;
     private boolean taskCompleted;
-    private long userID;
 
 }

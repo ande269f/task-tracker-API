@@ -3,6 +3,9 @@ package com.todoapp.todo.api.controllers;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.todoapp.todo.api.dto.TaskDto;
+import com.todoapp.todo.api.dto.TaskEditDto;
+import com.todoapp.todo.api.dto.TaskOrderDto;
+import com.todoapp.todo.api.dto.UserTaskDataDto;
 import com.todoapp.todo.enums.rowUpdateStatus;
 import com.todoapp.todo.services.LoadDataService;
 import com.todoapp.todo.services.UnloadDataService;
@@ -37,10 +40,52 @@ public class TaskController {
 
     @GetMapping("/loadTasks/")
     public ResponseEntity<?> loadTasks(Authentication authentication) {
-        List<TaskDto> tasksDto = loadDataService.loadTasks(authentication);
-        System.out.println(tasksDto);
+        long userId = loadDataService.fetchUserId(authentication);
+        List<TaskDto> tasksDto = loadDataService.loadTasks(userId);
+
         return ResponseEntity.ok(tasksDto);
     }
+
+    @PostMapping("/unloadTaskEdit/")
+    public ResponseEntity<String> unloadTaskEdit(@RequestBody TaskEditDto taskEditDto) {
+        rowUpdateStatus status = unloadDataService.unloadtaskEdit(taskEditDto);
+
+        return ResponseEntity.ok(status.toString());
+    }
+
+    @PostMapping("/unloadTaskOrders/")
+    public ResponseEntity<?> unloadTaskOrder(Authentication authentication, @RequestBody List<TaskOrderDto> taskEditDto) {
+        long userId = loadDataService.fetchUserId(authentication);
+        rowUpdateStatus status = unloadDataService.unloadTaskOrder(userId, taskEditDto);
+
+        return ResponseEntity.ok(status.toString());
+    }
+
+
+
+    @GetMapping("/loadTaskEdits/{taskUuid}")
+    public ResponseEntity<?> loadTaskEdits(Authentication authentication, @PathVariable String taskUuid) {
+        List<TaskEditDto> tasksEditsDto = loadDataService.loadTaskEdits(taskUuid);
+
+        return ResponseEntity.ok(tasksEditsDto);
+    }
+
+
+    @GetMapping("/loadUserData/")
+    public ResponseEntity<UserTaskDataDto> loadUserData(Authentication authentication) {
+        long userId = loadDataService.fetchUserId(authentication);
+        List<TaskDto> tasksDto = loadDataService.loadTasks(userId);
+        List<TaskOrderDto> taskOrderDto = loadDataService.loadTaskOrder(userId);
+
+        UserTaskDataDto userTaskDataDto = UserTaskDataDto.builder()
+            .tasks(tasksDto)
+            .sortTasks(taskOrderDto)
+            .build();
+
+        return ResponseEntity.ok(userTaskDataDto);
+    }
+
+
     
     
 }
