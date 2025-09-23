@@ -11,5 +11,6 @@ import com.todoapp.todo.persistence.entity.TaskOrder;
 public interface TaskOrderRepository extends JpaRepository<TaskOrder, Long> {
     List<TaskOrder> findAllByUserId(long userId);
     TaskOrder findByTaskUuid(String taskUuid);
+    TaskOrder findTopByUserIdOrderBySortOrderDesc(long userId);
     
 }

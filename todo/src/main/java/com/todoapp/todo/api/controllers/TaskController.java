@@ -53,10 +53,10 @@ public class TaskController {
         return ResponseEntity.ok(status.toString());
     }
 
-    @PostMapping("/unloadTaskOrders/")
-    public ResponseEntity<?> unloadTaskOrder(Authentication authentication, @RequestBody List<TaskOrderDto> taskEditDto) {
+    @PostMapping("/updateTaskOrder/")
+    public ResponseEntity<?> updateTaskOrder(Authentication authentication, @RequestBody List<TaskOrderDto> TaskOrdersDto) {
         long userId = loadDataService.fetchUserId(authentication);
-        rowUpdateStatus status = unloadDataService.unloadTaskOrder(userId, taskEditDto);
+        rowUpdateStatus status = unloadDataService.updateTaskOrders(userId, TaskOrdersDto);
 
         return ResponseEntity.ok(status.toString());
     }

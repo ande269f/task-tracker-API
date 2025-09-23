@@ -26,6 +26,7 @@ public class UnloadDataService {
     private final TaskOrderRepository taskOrderRepository;
 
     public rowUpdateStatus unloadTask(TaskDto taskDto, long userId) {
+        // laver en task i db
         try {
             Task task = new Task();
             task.setTaskCompleted(taskDto.getTaskCompleted());
@@ -40,10 +41,28 @@ public class UnloadDataService {
             return rowUpdateStatus.ERROR;
         }
 
+        //laver en tilhørende taskSort i db 
+        try {
+
+            TaskOrder highestTaskOrder = taskOrderRepository.findTopByUserIdOrderBySortOrderDesc(userId);
+
+            //NextSortOrder starter med værdi 1 som long
+            long nextSortOrder = 1;
+
+            if (highestTaskOrder != null) {
+                nextSortOrder = highestTaskOrder.getSortOrder() + 1;
+            }
+
+            TaskOrder taskOrder = new TaskOrder();
+            taskOrder.setTaskUuid(taskDto.getTaskUuid());
+            taskOrder.setSortOrder(nextSortOrder);
+            taskOrder.setUserId(userId);
+            taskOrderRepository.save(taskOrder);
+        } catch (Exception e) {
+            return rowUpdateStatus.ERROR;
+        }
+
         return rowUpdateStatus.SUCCESS;
-
-
-        
 
     }
 
@@ -69,15 +88,20 @@ public class UnloadDataService {
 
     }
 
-    public rowUpdateStatus unloadTaskOrder(long userId, List<TaskOrderDto> taskOrderDtos) {
+    public rowUpdateStatus updateTaskOrders(long userId, List<TaskOrderDto> taskOrderDtos) {
     try {
-        for (TaskOrderDto taskOrderDto: taskOrderDtos) {
-        TaskOrder taskOrder = new TaskOrder();
-        taskOrder.setTaskUuid(taskOrderDto.getUuid());
-        taskOrder.setSortOrder(taskOrderDto.getSortOrder());
-        taskOrder.setId(userId);
-        taskOrderRepository.save(taskOrder);
+        List<TaskOrder> taskOrders = taskOrderRepository.findAllByUserId(userId);
+        for (TaskOrder entity : taskOrders) {
+            // find matchende dto baseret på fx taskUuid
+            for (TaskOrderDto dto : taskOrderDtos) {
+                
+                if (dto.getUuid().equals(entity.getTaskUuid())) {
+                    entity.setSortOrder(dto.getSortOrder());
+                }
+            }
         }
+
+        taskOrderRepository.saveAll(taskOrders);
 
     } catch (Exception e) {
         return rowUpdateStatus.ERROR;
