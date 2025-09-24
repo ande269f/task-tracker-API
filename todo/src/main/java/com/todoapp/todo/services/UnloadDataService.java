@@ -82,10 +82,24 @@ public class UnloadDataService {
     }
 
     return rowUpdateStatus.SUCCESS;
+    }
 
+    public rowUpdateStatus updateTask(TaskDto taskDto) {
+        try {
+        Task task = taskRepository.findByTaskUuid(taskDto.getTaskUuid());
 
-        
+            task.setTaskText(taskDto.getTaskText());
+            task.setTaskCompleted(taskDto.getTaskCompleted());
+            task.setTaskCreated(taskDto.getTaskCreated());
+            task.setTaskDeleted(taskDto.getTaskDeleted());
 
+            taskRepository.save(task);
+
+        } catch (Exception e) {
+            return rowUpdateStatus.ERROR;
+        }
+
+    return rowUpdateStatus.SUCCESS;
     }
 
     public rowUpdateStatus updateTaskOrders(long userId, List<TaskOrderDto> taskOrderDtos) {
@@ -109,6 +123,21 @@ public class UnloadDataService {
 
     return rowUpdateStatus.SUCCESS;
 
+    }
+
+    public rowUpdateStatus deleteTasks(List<TaskDto> taskDtos) { 
+        System.out.println(taskDtos);
+    try {
+            for (TaskDto taskDto: taskDtos) {
+                Task task = taskRepository.findByTaskUuid(taskDto.getTaskUuid());
+            if (task != null) {
+                taskRepository.delete(task);
+            }
+        }
+    } catch (Exception e) {
+        return rowUpdateStatus.ERROR;
+    }
+    return rowUpdateStatus.SUCCESS;
     }
 
 }

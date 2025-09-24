@@ -9,5 +9,6 @@ import com.todoapp.todo.persistence.entity.Task;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, String> {
     List<Task> findAllByUserId(long userId);
+    Task findByTaskUuid(String taskUuid);
     
 }
