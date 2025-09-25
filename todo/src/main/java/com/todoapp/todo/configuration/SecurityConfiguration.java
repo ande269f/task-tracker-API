@@ -31,10 +31,8 @@ public class SecurityConfiguration {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/**").permitAll()
-                      //  .requestMatchers(HttpMethod.GET, "/users/getUser/**").permitAll()
-                      //  .requestMatchers(HttpMethod.POST, "/users/createNewUser/**").permitAll()
+                        .requestMatchers(HttpMethod.GET.POST, "/users/login/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users/createNewUser/**").permitAll()
                         .anyRequest().authenticated())
         ;
         return http.build();

@@ -44,13 +44,23 @@ public class UserService {
 
     }
 
-    public rowUpdateStatus checkUserPasswordLogin(String username, String password) {
+    public rowUpdateStatus checkUserPasswordLogin(String usernameDto, String passwordDto) {
 
-        if (password == null) {
+        User user = userRepository.findFirstByUsername(usernameDto);
+        String userPassword = user.getPassword();
+
+        // hvis brugeren ikke har et kodeord
+        if (userPassword == null) {
             return rowUpdateStatus.SUCCESS;
+        } else 
+
+        //hvis brugeren ikke giver et kodeord, men der er brug for et
+        if (passwordDto == null) {
+            return rowUpdateStatus.PASSWORD_NEEDED;
         }
 
-        if (password.equals(password)) {
+        // hvis kodeordet findes og matcher brugernavnets kodeord
+        if (passwordEncoder.matches(passwordDto, userPassword)) {
             return rowUpdateStatus.SUCCESS;
         } 
         else {

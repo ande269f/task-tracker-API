@@ -3,6 +3,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.todoapp.todo.api.dto.LoginDto;
+import com.todoapp.todo.api.dto.TaskDto;
 import com.todoapp.todo.api.dto.UserDtoJwt;
 import com.todoapp.todo.api.dto.UserRequestDto;
 import com.todoapp.todo.configuration.UserAuthProvider;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -29,26 +32,31 @@ public class UsersController {
     
     private final UserService userService;
 
-    @GetMapping("/getUser/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable String username, @RequestParam(required = false) String password) {
+    @PostMapping("/login/")
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
+        String username = loginDto.getUsername();
+        String password = loginDto.getPassword();
+
         
         UserRequestDto userDto = userService.getUserByUsername(username);
         UserDtoJwt userDtoJwt = new UserDtoJwt();
+        rowUpdateStatus loginStatus = rowUpdateStatus.ERROR;
 
         // hvis brugeren ikke findes
         if (userDto == null) {
             return ResponseEntity.ok(rowUpdateStatus.USER_NOT_FOUND);
         }
+        
 
-        // tjekker om password er korrekt - også selvom password er null
-        rowUpdateStatus loginStatus = userService.checkUserPasswordLogin(userDto.getUsername(), password);
+        loginStatus = userService.checkUserPasswordLogin(userDto.getUsername(), password);
 
+        // hvis kodeordet er korrekt, lav jwt token
         if (loginStatus.equals(rowUpdateStatus.SUCCESS)) {
             userDtoJwt.setToken(userAuthProvider.createToken(userDto));
             return ResponseEntity.ok(userDtoJwt);
         }
         else {
-            return ResponseEntity.status(HttpStatus.OK).body(loginStatus.toString());
+            return ResponseEntity.ok(loginStatus.toString());
         }
 
 

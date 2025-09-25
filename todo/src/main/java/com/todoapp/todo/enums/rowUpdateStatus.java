@@ -4,5 +4,6 @@ public enum rowUpdateStatus {
     SUCCESS,
     USER_NOT_FOUND,
     ERROR,
-    LOGIN_FAILED
+    LOGIN_FAILED,
+    PASSWORD_NEEDED,
 }
