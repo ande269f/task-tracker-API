@@ -33,6 +33,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers(HttpMethod.GET.POST, "/users/login/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users/createNewUser/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/checkLogin/").permitAll()
                         .anyRequest().authenticated())
         ;
         return http.build();
