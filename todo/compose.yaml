@@ -9,15 +9,15 @@
 # https://github.com/docker/awesome-compose
 services:
   db:
-    image: mysql:8.1 
+    image: postgres:17
     environment:
-      MYSQL_ROOT_PASSWORD: OSN6y7yC2z61
-      MYSQL_DATABASE: todo-db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: OSN6y7yC2z61
+      POSTGRES_DB: todo-db
     ports:
-      - "3008:3306"  # host:container
-    command: --bind-address=0.0.0.0
+      - "5432:5432"  # host:container
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d todo-db"]
       interval: 10s
       retries: 5
 
@@ -29,8 +29,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/todo-db
-      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/todo-db
+      SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: OSN6y7yC2z61
 
 # The commented out section below is an example of how to define a PostgreSQL
