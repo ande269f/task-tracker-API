@@ -9,12 +9,13 @@
 # https://github.com/docker/awesome-compose
 services:
   db:
-    image: mysql:8.1
+    image: mysql:8.1 
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: OSN6y7yC2z61
       MYSQL_DATABASE: todo-db
     ports:
       - "3008:3306"  # host:container
+    command: --bind-address=0.0.0.0
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       interval: 10s
@@ -30,7 +31,7 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/todo-db
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_DATASOURCE_PASSWORD: OSN6y7yC2z61
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
