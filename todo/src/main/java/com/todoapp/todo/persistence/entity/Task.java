@@ -16,7 +16,7 @@ public class Task {
     private long userId;
     private String taskText;
     private Boolean taskCompleted;
-    private LocalDateTime taskDeleted;
-    private LocalDateTime taskCreated;
+    private String taskDeleted;
+    private String taskCreated;
     
 }

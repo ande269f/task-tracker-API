@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 public class TaskEditDto {
     @Id
     private String taskEditsUuid;  
-    private LocalDateTime dateEdited;
-    private LocalDateTime taskDeleted;
+    private String dateEdited;
+    private String taskDeleted;
     private String taskUuid;
     private String taskText;
     private boolean taskCompleted;

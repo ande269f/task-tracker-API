@@ -14,8 +14,8 @@ import lombok.Data;
 public class TaskEdit {
     @Id
     private String editUuid;  
-    private LocalDateTime dateEdited;
-    private LocalDateTime taskDeleted;
+    private String dateEdited;
+    private String taskDeleted;
     private String taskUuid;
     private String taskText;
     private boolean taskCompleted;
