@@ -14,7 +14,7 @@ public class WebCorsConfiguration {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**") // alle endpoints
-                        .allowedOrigins("https://ande269f.github.io")
+                        .allowedOrigins("https://ande269f.github.io", "http://localhost:3000")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
             }
         };
